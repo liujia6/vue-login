@@ -46,10 +46,10 @@ export default {
           if (valid) {
             const form=this.form;
             form.password=this.CalcuMD5(this.form.password);
-            this.$ajax.post("/api/signup", form).then(res => {
-              if(res.data.success==false){
+            this.$ajax.post("/api/signup",form).then(res => {
+              if(res.data.code==1){
                 this.$message(res.data.message);
-              }else if(res.data.success==true){
+              }else if(res.data.code==0){
                 this.$message(res.data.message);
                 this.$router.push("/login");
               }

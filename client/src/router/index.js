@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import Signup from '@/pages/Signup'
 import Login from '@/pages/Login'
 import Welcome from '../pages/Welcome'
+import Cookie from 'js-cookie'
 // import Welcome from '@pages/Welcome'
 Vue.use(Router)
 
@@ -11,7 +12,7 @@ export default new Router({
     {
       path: '/',
       name: 'Signup',
-      component: Signup
+      component: Signup,
     },{
       path:'/Login',
       name:'Login',

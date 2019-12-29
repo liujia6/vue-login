@@ -29,6 +29,7 @@
 <script>
 import md5 from 'js-md5'
 import Verify from 'vue2-verify'
+import Cookies from 'js-cookie'
 
 export default {
   name: 'Login',
@@ -37,7 +38,7 @@ export default {
       user:{
         account:'',
         password:'',
-        verify:false
+        // verify:false
       },
        draggable: 'Drag Me'
     }
@@ -49,13 +50,13 @@ export default {
     login(){
       const form=this.user;
       const that=this;
-      form.password=this.CalcuMD5(this.user.password);
-      if(this.verify===false){
-         this.$message('验证码错误');
-      }
+      form.password=this.CalcuMD5(form.password);
+      // if(this.verify===false){
+      //    this.$message('验证码错误');
+      // }
       this.$ajax.post('/api/login',form).then(function(res){
-        if(res.data.message=="success"){
-          console.log("success!!!");
+        if(res.data.code==0){
+          Cookies.set('token',res.data.data.token,{ expires: 9999 })
           that.$router.push('/welcome')
         }else{
           that.$message(res.data.message)
@@ -72,14 +73,13 @@ export default {
     }
   },
   mounted(){
-     console.log("asdfsdf")
     const login=this.login;
     jigsaw.init({
       el: document.getElementById('kigsawContainer'),
       width: 250, // 可选, 默认310
       height: 150, // 可选, 默认155
       onSuccess: function () {
-        console.log("asdfsdf")
+        console.log("验证成功")
         login();
       },
       onFail: function () {
