@@ -13,6 +13,7 @@
           </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="signup('form')">注册</el-button>
+            <el-button type="primary" @click="login">跳转登录</el-button>
           </el-form-item>
         </el-form>
     </el-card>
@@ -57,6 +58,9 @@ export default {
           }
         });
 
+    },
+    login(){
+      this.$router.push('/login')
     },
     CalcuMD5(pwd) {
       pwd = pwd.toUpperCase();

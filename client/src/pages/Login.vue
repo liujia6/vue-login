@@ -36,8 +36,8 @@ export default {
   data () {
     return {
       user:{
-        account:'',
-        password:'',
+        username:'',
+        city:'',
         // verify:false
       },
        draggable: 'Drag Me'
@@ -57,6 +57,9 @@ export default {
       this.$ajax.post('/api/login',form).then(function(res){
         if(res.data.code==0){
           Cookies.set('token',res.data.data.token,{ expires: 9999 })
+          console.log(res.data.data.uid)
+          localStorage.setItem('uid',res.data.data.uid)
+          console.log(res.data.uid)
           that.$router.push('/welcome')
         }else{
           that.$message(res.data.message)
@@ -73,6 +76,7 @@ export default {
     }
   },
   mounted(){
+    const that=this;
     const login=this.login;
     jigsaw.init({
       el: document.getElementById('kigsawContainer'),
@@ -83,7 +87,7 @@ export default {
         login();
       },
       onFail: function () {
-        this.$message("验证码错误")
+        that.$message("验证码错误")
       },
       onRefresh: function () {}
     })

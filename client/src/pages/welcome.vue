@@ -3,12 +3,16 @@
      <el-card class="box-card center" style="width:500px">
         <el-form  label-width="80px" :model="user">
           <el-form-item label="用户名">
-           asdfa
+            <el-input v-model="user.username"></el-input>
           </el-form-item>
-      </el-form>
-      <el-button @click="changePassword">修改密码</el-button>
-      <el-button @click="logOff">注销</el-button>
-      <el-button @click="logout">退出</el-button>
+          <el-form-item label="城市">
+            <el-input v-model="user.city"></el-input>
+          </el-form-item>
+          </el-form>
+          <el-button @click="change">确定更改</el-button>
+          <!-- <el-button @click="logOff">注销</el-button> -->
+          <el-button @click="logout">退出</el-button>
+          <el-button @click="logoff">注销</el-button>
      </el-card>
   </div>
 </template>
@@ -19,18 +23,32 @@ export default {
   name: 'Welcome',
   data () {
     return {
-      message: ''
+      user: {
+        username:'',
+        city:''
+      }
     }
   },
   created(){
-    this.$ajax.get('/api/welcome',function(res){
-      console.log(res)
-      this.message=res.data.data;
+    const that=this;
+    this.$ajax.get('/api/info?uid='+localStorage.uid).then(function(res){
+      console.log(res.data,that.user)
+      that.user.city=res.data.data.city;
+      that.user.username=res.data.data.username;
     })
   },
   methods:{
+    change(){
+      const that=this;
+      this.$ajax.post('api/change',Object.assign(this.user,{uid:localStorage.getItem('uid')})).then((res)=>{
+          if(res.data.code===0){
+            that.$message('修改成功！')
+          }
+      })
+    },
     logout(){
       Cookies.remove('token');
+      localStorage.removeItem('uid')
       this.$message('退出成功');
       this.$router.push('/login');
     },
@@ -41,12 +59,14 @@ export default {
           cancelButtonText: '取消',
           type: 'warning'
       }).then(() => {
-        that.$ajax.get('/logoff',{account:'ddd'}).then((res)=>{
+        that.$ajax.delete('/api/logoff',{uid:localStorage.getItem('uid')}).then((res)=>{
           if(res.code===0){
             this.$message({
               type: 'success',
               message: '注销成功!'
             });
+            localStorage.removeItem('uid')
+            Cookies.remove('token')
           }else{
             this.$message({
               type: 'info',

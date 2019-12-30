@@ -66,11 +66,9 @@ class Admin{
     async login(req,res){
         try{
             const find=await User.find({account:req.body.account})
-            console.log()
             if(find.length){
                 if(find[0].password!==req.body.password){
                     throw new Error("密码错误")
-                    // res.send({code:1,message:"密码错误"})
                 }
             }else{
                 throw new Error("账户不存在请注册")
@@ -78,26 +76,33 @@ class Admin{
             const is=await User.find({account:req.body.account})
             if(is.length){
                 if(is[0].password===req.body.password){
+                    console.log(is[0]._id);
                     const token=jwt.generate(req.body);
-                    res.send({code:0,message:'用户登录成功',data:{token:token}})
+                    res.send({code:0,message:'用户登录成功',data:{token:token,uid:is[0]._id}})
                 }
             }else{
                 throw new Error("用户名已被注册")
                 // res.send({code:1,message:'用户名已被注册'})
             }
         }catch(err){
-            res.send({
-                code:1,
-                message:err.message
-            })
+            res.send({code:1,message:err.message})
         }
     }
-    async welcome(req,res){
+    /*返回个人信息-- 查 */
+    async info(req,res){
         try{
-            const find=await User.find({account:req.body.account})
-            res.send(find[0]);
-        }catch(err){
-            res.send(err.message);
+            console.log('infourl')
+            const find=await User.findById(req.query.uid);
+            console.log(find)
+            res.send({
+               code:0,
+               data:{ 
+                   username:find.username?find.username:'',
+                   city:find.city?find.city:''
+                }
+            });
+        }catch(err){ 
+            res.send({code:1,message:err.message});
         }
     }
     /* 退出登录  */
@@ -107,21 +112,21 @@ class Admin{
     /* 注销账号---删 */
     async logoff(req,res){
         try{
-            await User.remove({account:req.body.account});
-            res.send({code:1,message:'注销成功！'})
-            this.$router.push('/signup')
+            await User.deleteOne({uid:req.body.uid});
+            res.send({code:0,message:'注销成功！'})
         }catch(err){
+            console.log(err.message)
             res.send({code:1,message:'注销失败'})
         }
     }
-    /* 改密码---改 */
-    async changePassword(req,res){
+    /* 改信息---改 */
+    async change(req,res){
         try{
-            await User.updateMany({account:req.body.account},{$set:{username:req.body.username}})
-            res.send({code:1,message:'修改用户名成功！'})
+            await User.findByIdAndUpdate(req.body.uid,{username:req.body.username,city:req.body.city})
+            res.send({code:0,message:'修改成功！'})
         }catch(err){
-            console.log(err);
-            res.send({code:1,message:'修改用户名失败！'})
+            console.log(err.message);
+            res.send({code:1,message:'修改失败！'})
         }
     }
     async check(req,res,next){
@@ -133,7 +138,8 @@ const admin=new Admin();
 
  app.get(/[\/^login]|[^\/signup]/,function(req,res,next){
     try{
-        if(jwt.verify(req.cookies.name)===null){
+        console.log(jwt.verify(req.cookies.token))
+        if(!jwt.verify(req.cookies.token)){
             console.log("yes")
             next();
         }else{
@@ -148,10 +154,11 @@ const admin=new Admin();
 
 router.post('/login', admin.login);
 router.post('/signup', admin.signup);
+router.post('/change', admin.change);
 
-router.get('/welcome', admin.welcome);
+router.get('/info', admin.info);
 // router.get('/logout', admin.logout);
-router.get('/logoff', admin.logoff);
+router.delete('/logoff', admin.logoff);
 // /* 挂载路由 */
 app.use('/',router)
 
