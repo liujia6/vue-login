@@ -31,6 +31,7 @@ export default {
   },
   created(){
     const that=this;
+    console.log("sdf")
     this.$ajax.get('/api/info?uid='+localStorage.uid).then(function(res){
       console.log(res.data,that.user)
       that.user.city=res.data.data.city;
@@ -50,7 +51,7 @@ export default {
       Cookies.remove('token');
       localStorage.removeItem('uid')
       this.$message('退出成功');
-      this.$router.push('/login');
+      this.$router.push('/');
     },
     logoff(){
       const that=this;
@@ -59,18 +60,20 @@ export default {
           cancelButtonText: '取消',
           type: 'warning'
       }).then(() => {
-        that.$ajax.delete('/api/logoff',{uid:localStorage.getItem('uid')}).then((res)=>{
+        that.$ajax.delete('/api/logoff?uid='+localStorage.getItem('uid')).then((res)=>{
+          console.log(res)
           if(res.code===0){
             this.$message({
               type: 'success',
-              message: '注销成功!'
+              message: res.data.message
             });
             localStorage.removeItem('uid')
             Cookies.remove('token')
+            that.$router.push('/')
           }else{
             this.$message({
               type: 'info',
-              message: '注销失败!'
+              message: res.data.message
             });
           }
         })
