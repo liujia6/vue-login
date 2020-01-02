@@ -2,8 +2,8 @@ var jwt=require("jsonwebtoken");
 
 /* 生成jwt签发 */  
 class jwtToken{
-    constructor(secret){
-        this.secret=secret;
+    constructor(){
+        this.secret='sdfjn.../sdf';
     }
     generate(obj){
         const token=jwt.sign(obj,this.secret,{})
@@ -21,4 +21,4 @@ class jwtToken{
         
     }
 }  
-module.exports = new jwtToken('asdfsa.../');
+module.exports = new jwtToken();

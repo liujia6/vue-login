@@ -9,7 +9,6 @@ class Users{
     /* 注册---增 */
     async signup(req,res){
         try{
-            console.log(req.body.captcha,req.session)
             // req.session['captcha'] = captcha.text.toLowerCase();
             if(!req.session['captcha']){
                 res.send({code:1,message:'请刷新验证码'})
@@ -32,7 +31,6 @@ class Users{
             console.log(err.message)
             res.send({code:1,message:err.message})
         }
-        
     }
     /* 登录---查 */
     async login(req,res){
@@ -71,13 +69,15 @@ class Users{
     async info(req,res){
         try{
             const find=await User.findById(req.query.uid);
-            res.send({
-               code:0,
-               data:{ 
-                   username:find.username?find.username:'',
-                   city:find.city?find.city:''
-                }
-            });
+            if(find){
+                res.send({
+                    code:0,
+                    data:{ 
+                        username:find.username?find.username:'',
+                        city:find.city?find.city:''
+                     }
+                });
+            }
         }catch(err){ 
             res.send({code:1,message:err.message});
         }
@@ -118,8 +118,7 @@ class Users{
         }); 
         // 保存到session,忽略大小写 
         req.session['captcha'] = captcha.text.toLowerCase();
-        console.log(req.session) 
-        console.log(req.session['captcha']); //0xtg 生成的验证码
+        // console.log(req.session['captcha']); //0xtg 生成的验证码
         res.setHeader('Content-Type', 'image/svg+xml');
         res.send(String(captcha.data));
         res.end();

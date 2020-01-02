@@ -13,7 +13,7 @@
               <el-form-item label="密码" prop="password">
                 <el-input v-model="form.password"  show-password></el-input>
               </el-form-item>
-              <el-form-item label="验证码" ref="liujia">
+              <el-form-item label="验证码" prop="captcha">
                 <el-col :span="16">
                   <el-input type="text" v-model="form.captcha"></el-input>
                 </el-col>
@@ -73,12 +73,6 @@ export default {
         password:"",
         captcha:""
       },
-      user:{
-        username:'',
-        city:'',
-        // verify:false
-      },
-      draggable: 'Drag Me',
       res:"",
       rules:{
           account: [
@@ -86,6 +80,9 @@ export default {
           ],
           password: [
             { required: true, message: '请输入密码', trigger: 'change' }
+          ],
+          captcha:[
+            {required:true,message:'请输入验证码',trigger:'change'}
           ]
       },
       res:''

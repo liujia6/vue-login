@@ -6,9 +6,9 @@ const app = express();
 const db =require('./db')
 const session = require('express-session');
 const cookieParser = require('cookie-parser'); 
-const router =require('./routes.js')
-const bodyParser = require('body-parser')
-
+const router =require('./routes.js');
+const bodyParser = require('body-parser');
+const jwt = require('../jwt');
 
 app.use(bodyParser.urlencoded({txtended: false}))
 //parse application/json
@@ -53,6 +53,7 @@ app.use(function (req, res, next) {
     }
     next() // 正常 载入下一个中间件
 })
+
 router(app)
 const server = app.listen(3000, function (err,data) {
     console.log('监听端口3000')

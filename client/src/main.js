@@ -15,29 +15,27 @@ const service = axios.create({
   // baseURL: 'http://192.168.17.96:8080', // api 的 base_url
   timeout: 5000 // 请求超时时间
 })
-
-service.interceptors.response.use(
-  config => {
-    // console.log(config.status)
-    // debugger;
-    if(config.status=='403'){
-      vm.$message('token校验不成功')
-    }
-    // console.log(config)
-    //   if (store.state.token) {  // 判断是否存在token，如果存在的话，则每个http header都加上token
-    //       config.headers.Authorization = `token ${store.state.token}`;
-    //   }
-      // return config;
+//拦截器设置未授权响应跳转
+axios.interceptors.response.use(
+  response => {
+    return response;
   },
-  err => {
-      return Promise.reject(err);
+  error => {
+    if (error.response) {
+      switch (error.response.status) {
+        case 401:
+          // 返回 401 清除token信息并跳转到登录页面
+          router.replace({
+            path: '/',
+            query: {
+              redirect: router.currentRoute.fullPath
+            }
+          })
+          return response;
+      }
+    }
+    return Promise.reject(error.response.data) // 返回接口返回的错误信息
   });
-// router.beforeEach((to, from, next) => {
-//   if(to.path!=='/login'&&to.path!=='/signup'){
-//     if(Cookie.get('token'))
-//   }
-//   next()
-// })
 
 Vue.prototype.$ajax = axios;
 
