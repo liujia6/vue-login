@@ -14,7 +14,7 @@ router.delete('/logoff', users.logoff);
  /* 挂载路由 */
 module.exports =  function(app){
     app.use('/',function(req,res,next){
-        if(req.url!=='/login'&&req.url!=='/signup'&&req.url !== '/getCaptcha'){
+        if(req.url!=='/login'&&req.url!=='/signup'&&req.url !== '/getCaptcha'&&req.url !== '/logout'&&req.url !== '/logoff'){
             try{
                 if(req.cookies.token && !jwt.verify(req.cookies.token)){
                     console.log("yes")

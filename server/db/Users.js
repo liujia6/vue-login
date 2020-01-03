@@ -84,7 +84,13 @@ class Users{
     }
     /* 退出登录  */
     async logout(req,res){
-        
+        try {
+            res.cookie('token', '', { expires: new Date(0)}); 
+            res.send({code:0,message:'退出成功'})
+        } catch (error) {
+            res.send({code:1,message:err.message})
+        }
+
     }
     /* 注销账号---删 */
     async logoff(req,res){
@@ -107,7 +113,7 @@ class Users{
         }
     }
     async getCaptcha(req,res,next){
-        var captcha = svgCaptcha.create({ 
+        const captcha = svgCaptcha.create({ 
             inverse: false, // 翻转颜色 
             fontSize: 48, // 字体大小 
             noise: 2, // 噪声线条数 

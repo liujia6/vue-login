@@ -97,9 +97,11 @@ export default {
             this.$ajax.post("/api/signup",form).then(res => {
               if(res.data.code==1){
                 this.$message(res.data.message);
+                this.refreshCaptcha();
               }else if(res.data.code==0){
                 this.$message(res.data.message);
-                that.activeName="second"
+                that.activeName="second";
+                this.refreshCaptcha()
               }
             });
           }
@@ -116,8 +118,11 @@ export default {
               if(res.data.code==0){
                 localStorage.setItem('uid',res.data.data.uid)
                 that.$router.push('/welcome')
+                this.refreshCaptcha();
               }else{
                 that.$message(res.data.message)
+                that.user.password='';
+                this.refreshCaptcha()
               }
             })
           }
