@@ -13,6 +13,9 @@ export default new Router({
       path: '/',
       name: 'Login',
       component: Login,
+      meta:{
+        authDisable:true
+      }
     },{
       path:'/Welcome',
       name:'Welcome',

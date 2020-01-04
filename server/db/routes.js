@@ -18,8 +18,8 @@ module.exports =  function(app){
     app.use('/',function(req,res,next){
         if(req.url!=='/login'&&req.url!=='/signup'&&req.url !== '/getCaptcha'&&req.url !== '/logout'&&req.url !== '/logoff'&&req.url!=='/getRSAPubKey'){
             try{
-                const token = req.headers.authorization
-                if(token && !jwt.verify(token)){
+                const token = `Bearer `+req.headers.authorization;
+                if(token && !jwt.verify(token.split(' ')[1])){
                     next();
                 }else{
                     res.status(401).json({code: '1', error: '没有认证请登录'})

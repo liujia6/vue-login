@@ -10,18 +10,20 @@ import 'element-ui/lib/theme-chalk/index.css';
 import './assets/jigsaw'
 Vue.use(ElementUI);
 
-// 添加一个请求拦截器
+// 请求拦截
 axios.interceptors.request.use(function (config) {
-    const token=window.localStorage.getItem('token');
-　　//这里经常搭配token使用，将token值配置到tokenkey中，将tokenkey放在请求头中
+  const token=window.localStorage.getItem('token');
+　　//将token放在请求头中
 　　if(token){
-      config.headers['Authorization'] = token;
-    }
-    return config;
-  }, function (error) {
-    return Promise.reject(error);
-  });
-//拦截器设置未授权响应跳转
+    //Bearer token是token的一种类型，规范的写法
+    config.headers['Authorization'] = `Bearer `+token;
+  }
+  return config;
+}, function (error) {
+  return Promise.reject(error);
+});
+
+//设置未授权响应拦截器
 axios.interceptors.response.use(
   response => {
     return response;
@@ -38,10 +40,18 @@ axios.interceptors.response.use(
       }
     }
     return Promise.reject(error.response.data) // 返回接口返回的错误信息
-  });
+});
 
 Vue.prototype.$ajax = axios;
-
+//每次路由跳转的时候判断页面是否需要token，再检验是否有token，没有的话就跳转登录，有的话就继续；可根据不同业余需求更改
+router.beforeEach((to, from, next) => {
+  console.log(!to.meta.authDisable && !window.localStorage.getItem('token'))
+    if(!to.meta.authDisable && window.localStorage.getItem('token')){
+      next('/');
+    }else{
+      next();
+    }
+})
 
 Vue.config.productionTip = false
 
