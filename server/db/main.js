@@ -8,7 +8,7 @@ const session = require('express-session');
 const cookieParser = require('cookie-parser'); 
 const router =require('./routes.js');
 const bodyParser = require('body-parser');
-const jwt = require('../jwt');
+const jwt = require('../utils/jwt');
 
 app.use(bodyParser.urlencoded({txtended: false}))
 //parse application/json
@@ -49,7 +49,7 @@ app.use(function (req, res, next) {
     if (!req.session) {
         return next(new Error('session错误'))
     }else {
-        console.log(req.session,'session正常')//正常打印当前session
+        console.log('session正常')//正常打印当前session
     }
     next() // 正常 载入下一个中间件
 })

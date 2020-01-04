@@ -55,7 +55,7 @@
 
 <script>
 import md5 from 'js-md5'
-
+import JSEncrypt from 'jsencrypt'
 export default {
   name: 'Signup',
   data () {
@@ -87,58 +87,76 @@ export default {
     }
   },
   methods:{
-    signup(formName){
-      const that=this;
-      this.$refs[formName].validate((valid) => {
-          if (valid) {
-            const form=this.form;
-            form.captcha=form.captcha.toLowerCase()
-            form.password=this.CalcuMD5(this.form.password);
-            this.$ajax.post("/api/signup",form).then(res => {
-              if(res.data.code==1){
-                this.$message(res.data.message);
-                this.refreshCaptcha();
-              }else if(res.data.code==0){
-                this.$message(res.data.message);
-                that.activeName="second";
-                this.refreshCaptcha()
-              }
-            });
+    async validate(valid,type){
+        if(valid){
+          const form= type==='login'? this.user : this.form;
+          form.captcha=form.captcha.toLowerCase();
+          form.password=await this.calcRSA(form.password);
+          const result = await this.$ajax.post('/api/'+type,form);
+          this.$message(result.data.message);
+          this.refreshCaptcha();
+          if(type=='login'){
+            if(result.data.code===0){
+              localStorage.setItem('uid',result.data.data.uid);
+              this.$router.push('/welcome');
+            }else{
+              this.user.password='';
+            }
+          }else{
+            if(result.data.code===0){
+              this.form.password="";
+              this.activeName="second";
+            }else{
+              this.form.password='';
+            }
           }
-      });
+        }
     },
-    login(formName){
-      this.$refs[formName].validate((valid) => {
-          if (valid) {
-            const form=this.user;
+    signup(formName){
+      this.$refs[formName].validate((valid)=>{
+          this.validate(valid,'signup')
+      })
+    },
+    validateLogin(valid,that){
+      if (valid) {
+            const form=that.user;
             const that=this;
-            form.password=this.CalcuMD5(form.password);
+            form.password=that.CalcRSA(form.password);
             form.captcha=form.captcha.toLowerCase();
-            this.$ajax.post('/api/login',form).then(function(res){
+            that.$ajax.post('/api/login',form).then(function(res){
               if(res.data.code==0){
                 localStorage.setItem('uid',res.data.data.uid)
                 that.$router.push('/welcome')
-                this.refreshCaptcha();
+                that.refreshCaptcha();
               }else{
                 that.$message(res.data.message)
                 that.user.password='';
-                this.refreshCaptcha()
+                that.refreshCaptcha()
               }
             })
           }
-      });
-
     },
-    CalcuMD5(pwd) {
-      pwd = pwd.toUpperCase();
-      pwd = md5(pwd);
-      return pwd;
+    login(formName){
+      this.$refs[formName].validate((valid) => {
+          this.validate(valid,'login')
+      })
+    },
+    async calcRSA(pwd) {
+      let value = '';
+      const res=await this.$ajax.get('/api/getRSAPubKey')
+      if(res.data.code===0){
+         const encrypt = new JSEncrypt();
+         encrypt.setPublicKey(res.data.pubKey);
+         value = encrypt.encrypt(pwd);   // 加密明文
+      }
+      return value;
     },
     refreshCaptcha(){
       this.$ajax.get('/api/getCaptcha').then((res)=>{
         this.res=res.data
       })
-    }
+    },
+
   },
   created(){
     this.refreshCaptcha();

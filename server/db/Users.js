@@ -1,34 +1,40 @@
 const svgCaptcha = require('svg-captcha');
 
-const jwt = require('../jwt.js')
+const jwt = require('../utils/jwt.js')
 const User = require('./model')
+const RSAKey = require('../utils/RSAKey.js')
+// const crypto = require('crypto');
+//采用hamc的hash算法，只存储一个秘钥，要想更加安全可以在每个用户信息中添加秘钥即盐
+
 class Users{
     constructor(){
-        // super()
     }
     /* 注册---增 */
     async signup(req,res){
         try{
-            // req.session['captcha'] = captcha.text.toLowerCase();
             if(!req.session['captcha']){
                 res.send({code:1,message:'请刷新验证码'})
             }
             if(req.body.captcha==req.session['captcha']){
                 const is=await User.find({account:req.body.account})
                 if(!is.length){
+                    //RSA解密
+                    let pwd = RSAKey.privateDecrypt(req.body.password);
+                    console.log(pwd,'注册原始');
+                    //hamc加密
+                    pwd =   require('crypto').createHmac('sha256','secret-key').update(pwd).digest('hex'); 
+                    req.body.password = pwd;
                     const add=await new User(req.body).save();
                     if(add){//添加成功会返回当前添加对象
                         res.send({code:0,message :'注册成功'})
                     }
                 }else{
-                    throw new Error('用户名已被注册')
+                    throw new Error('用户名已被注册');
                 }
             }else{
                 res.send({code:1,message :'验证码输入错误'})
             }
-            
         }catch(err){
-            console.log(err.message)
             res.send({code:1,message:err.message})
         }
     }
@@ -41,25 +47,23 @@ class Users{
             if(req.body.captcha==req.session['captcha']){
                 const find=await User.find({account:req.body.account})
                 if(find.length){
-                    if(find[0].password!==req.body.password){
-                        throw new Error("密码错误")
-                    }
-                }else{
-                    throw new Error("账户不存在请注册")
-                }
-                const is=await User.find({account:req.body.account})
-                if(is.length){
-                    if(is[0].password===req.body.password){
-                        const token=jwt.generate({account:req.body.account});
+                    //RSA解密
+                    let pwd = RSAKey.privateDecrypt(req.body.password);
+                    //hamc加密
+                    console.log(pwd,'登录原始');
+                    pwd =  require('crypto').createHmac('sha256', 'secret-key').update(pwd).digest('hex'); 
+                    if(find[0].password!==pwd){
+                        throw new Error("密码错误");
+                    }else{
+                        const token=jwt.generate({uid:find[0]._id});
                         res.cookie("token",token,{maxAge: 900000, httpOnly: true});
-                        res.send({code:0,message:'用户登录成功',data:{token:token,uid:is[0]._id}})
+                        res.send({code:0,message:'用户登录成功',data:{token:token,uid:find[0]._id}});
                     }
                 }else{
-                    throw new Error("用户名已被注册")
-                    // res.send({code:1,message:'用户名已被注册'})
+                    throw new Error("账户不存在请注册");
                 }
             }else{
-                res.send({code:1,message :'验证码输入错误'})
+                throw new Error('验证码输入错误');
             }
         }catch(err){
             res.send({code:1,message:err.message})
@@ -128,6 +132,12 @@ class Users{
         res.setHeader('Content-Type', 'image/svg+xml');
         res.send(String(captcha.data));
         res.end();
+    }
+    getRSAPubKey(req,res){
+        res.send({
+            code:0,
+            pubKey:RSAKey.getPubKey()
+        })
     }
 }
 module.exports =  new Users()
