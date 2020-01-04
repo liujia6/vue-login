@@ -20,7 +20,6 @@ class Users{
                 if(!is.length){
                     //RSA解密
                     let pwd = RSAKey.privateDecrypt(req.body.password);
-                    console.log(pwd,'注册原始');
                     //hamc加密
                     pwd =   require('crypto').createHmac('sha256','secret-key').update(pwd).digest('hex'); 
                     req.body.password = pwd;
@@ -50,13 +49,12 @@ class Users{
                     //RSA解密
                     let pwd = RSAKey.privateDecrypt(req.body.password);
                     //hamc加密
-                    console.log(pwd,'登录原始');
                     pwd =  require('crypto').createHmac('sha256', 'secret-key').update(pwd).digest('hex'); 
                     if(find[0].password!==pwd){
                         throw new Error("密码错误");
                     }else{
                         const token=jwt.generate({uid:find[0]._id});
-                        res.cookie("token",token,{maxAge: 900000, httpOnly: true});
+                        // res.cookie("token",token,{maxAge: 900000, httpOnly: true});
                         res.send({code:0,message:'用户登录成功',data:{token:token,uid:find[0]._id}});
                     }
                 }else{
@@ -89,7 +87,7 @@ class Users{
     /* 退出登录  */
     async logout(req,res){
         try {
-            res.cookie('token', '', { expires: new Date(0)}); 
+            // res.cookie('token', '', { expires: new Date(0)}); 
             res.send({code:0,message:'退出成功'})
         } catch (error) {
             res.send({code:1,message:err.message})
@@ -100,9 +98,10 @@ class Users{
     async logoff(req,res){
         try{
             const result=await User.findByIdAndDelete(req.query.uid);
+            console.log(result);
             res.send({code:0,message:'注销成功！'})
         }catch(err){
-            console.log(err.message)
+            throw err;
             res.send({code:1,message:'注销失败'})
         }
     }
@@ -112,7 +111,6 @@ class Users{
             await User.findByIdAndUpdate(req.body.uid,{username:req.body.username,city:req.body.city})
             res.send({code:0,message:'修改成功！'})
         }catch(err){
-            console.log(err.message);
             res.send({code:1,message:'修改失败！'})
         }
     }
@@ -128,7 +126,6 @@ class Users{
         }); 
         // 保存到session,忽略大小写 
         req.session['captcha'] = captcha.text.toLowerCase();
-        // console.log(req.session['captcha']); //0xtg 生成的验证码
         res.setHeader('Content-Type', 'image/svg+xml');
         res.send(String(captcha.data));
         res.end();

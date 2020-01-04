@@ -7,14 +7,20 @@ import axios from 'axios'
 
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
-import Cookie from 'js-cookie'
 import './assets/jigsaw'
 Vue.use(ElementUI);
 
-const service = axios.create({
-  // baseURL: 'http://192.168.17.96:8080', // api 的 base_url
-  timeout: 5000 // 请求超时时间
-})
+// 添加一个请求拦截器
+axios.interceptors.request.use(function (config) {
+    const token=window.localStorage.getItem('token');
+　　//这里经常搭配token使用，将token值配置到tokenkey中，将tokenkey放在请求头中
+　　if(token){
+      config.headers['Authorization'] = token;
+    }
+    return config;
+  }, function (error) {
+    return Promise.reject(error);
+  });
 //拦截器设置未授权响应跳转
 axios.interceptors.response.use(
   response => {
@@ -27,9 +33,6 @@ axios.interceptors.response.use(
           // 返回 401 清除token信息并跳转到登录页面
           router.replace({
             path: '/',
-            query: {
-              redirect: router.currentRoute.fullPath
-            }
           })
           return response;
       }

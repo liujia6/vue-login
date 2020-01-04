@@ -30,7 +30,7 @@ export default {
   },
   created(){
     const that=this;
-    this.$ajax.get('/api/info?uid='+localStorage.uid).then(function(res){
+    this.$ajax.get('/api/info?uid='+window.localStorage.uid).then(function(res){
       that.user.city=res.data.data.city;
       that.user.username=res.data.data.username;
     })
@@ -38,7 +38,7 @@ export default {
   methods:{
     change(){
       const that=this;
-      this.$ajax.post('api/change',Object.assign(this.user,{uid:localStorage.getItem('uid')})).then((res)=>{
+      this.$ajax.post('api/change',Object.assign(this.user,{uid:window.localStorage.getItem('uid')})).then((res)=>{
           if(res.data.code===0){
             that.$message('修改成功！')
           }
@@ -51,13 +51,14 @@ export default {
           cancelButtonText: '取消',
           type: 'warning'
       }).then(() => {
-        that.$ajax.get('/api/logout?uid='+localStorage.getItem('uid')).then((res)=>{
+        that.$ajax.get('/api/logout?uid='+window.localStorage.getItem('uid')).then((res)=>{
           if(res.data.code===0){
             this.$message({
               type: 'success',
               message: res.data.message
             });
-            localStorage.removeItem('uid')
+            window.localStorage.removeItem('uid');
+            window.localStorage.removeItem('token');
             this.$router.replace('/');
           }else{
             this.$message({
@@ -80,13 +81,14 @@ export default {
           cancelButtonText: '取消',
           type: 'warning'
       }).then(() => {
-        that.$ajax.delete('/api/logoff?uid='+localStorage.getItem('uid')).then((res)=>{
+        that.$ajax.delete('/api/logoff?uid='+window.localStorage.getItem('uid')).then((res)=>{
           if(res.data.code===0){
             this.$message({
               type: 'success',
               message: res.data.message
             });
-            localStorage.removeItem('uid')
+            window.localStorage.removeItem('uid')
+            window.localStorage.removeItem('token')
             that.$router.push('/')
           }else{
             this.$message({

@@ -97,7 +97,8 @@ export default {
           this.refreshCaptcha();
           if(type=='login'){
             if(result.data.code===0){
-              localStorage.setItem('uid',result.data.data.uid);
+              window.localStorage.setItem('uid',result.data.data.uid);
+              window.localStorage.setItem('token',result.data.data.token);
               this.$router.push('/welcome');
             }else{
               this.user.password='';
@@ -125,7 +126,7 @@ export default {
             form.captcha=form.captcha.toLowerCase();
             that.$ajax.post('/api/login',form).then(function(res){
               if(res.data.code==0){
-                localStorage.setItem('uid',res.data.data.uid)
+                window.localStorage.setItem('uid',res.data.data.uid)
                 that.$router.push('/welcome')
                 that.refreshCaptcha();
               }else{
