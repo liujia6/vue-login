@@ -48,7 +48,7 @@ class Users{
                 if(find.length){
                     //RSA解密
                     let pwd = RSAKey.privateDecrypt(req.body.password);
-                    //hamc加密
+                    //hamc哈希映射
                     pwd =  require('crypto').createHmac('sha256', 'secret-key').update(pwd).digest('hex'); 
                     if(find[0].password!==pwd){
                         throw new Error("密码错误");
@@ -79,6 +79,8 @@ class Users{
                         city:find.city?find.city:''
                      }
                 });
+            }else{
+                throw new Error('查找信息失败')
             }
         }catch(err){ 
             res.send({code:1,message:err.message});
@@ -98,7 +100,7 @@ class Users{
     async logoff(req,res){
         try{
             const result=await User.findByIdAndDelete(req.query.uid);
-            console.log(result);
+            // console.log(result);
             res.send({code:0,message:'注销成功！'})
         }catch(err){
             throw err;
@@ -114,7 +116,7 @@ class Users{
             res.send({code:1,message:'修改失败！'})
         }
     }
-    async getCaptcha(req,res,next){
+    async getCaptcha(req,res){
         const captcha = svgCaptcha.create({ 
             inverse: false, // 翻转颜色 
             fontSize: 48, // 字体大小 

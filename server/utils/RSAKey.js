@@ -50,7 +50,7 @@ class RSAKey{
             key:prvKey, // 如果通过文件方式读入就需要用new Buffer（）转成buffer
             padding: crypto.constants.RSA_PKCS1_PADDING // 因为前端加密库使用的RSA_PKCS1_PADDING标准填充,所以这里也要使用RSA_PKCS1_PADDING 
         }, textBuffer).toString();
-        console.log(decryptText);
+        // console.log(decryptText);
         return decryptText;
     }
 }
