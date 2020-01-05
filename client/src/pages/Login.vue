@@ -74,16 +74,23 @@ export default {
       res:"",
       rules:{
           account: [
-            { required: true, message: '请输入用户名', trigger: 'change' }
+            {
+              required: true,
+              pattern: /^[a-zA-Z0-9_-]{4,16}$/,
+              message: '请输入4到16位字母、数字、下划线或减号',
+              trigger: 'change'
+            },
           ],
+//密码强度正则，最少6位，包括至少1个大写字母，1个小写字母，1个数字，1个特殊字符
+//var pPattern = /^.*(?=.{6,})(?=.*\d)(?=.*[A-Z])(?=.*[a-z])(?=.*[!@#$%^&*? ]).*$/;
           password: [
             { required: true, message: '请输入密码', trigger: 'change' }
           ],
           captcha:[
-            {required:true,message:'请输入验证码',trigger:'change'}
+            { required:true, min: 4, max: 4,message:'请输入4位验证码',trigger:'change'}
           ]
       },
-      res:''
+      res:'',
     }
   },
   methods:{
