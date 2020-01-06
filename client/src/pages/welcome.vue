@@ -4,13 +4,14 @@
         <el-form  label-width="80px" :model="user">
           <el-form-item label="用户名">
             <el-input v-model="user.username"></el-input>
+            <span>{{this.xss}}</span>
           </el-form-item>
           <el-form-item label="城市">
             <el-input v-model="user.city"></el-input>
+            <span>{{this.user.city}}</span>
           </el-form-item>
           </el-form>
           <el-button @click="change">确定更改</el-button>
-          <!-- <el-button @click="logOff">注销</el-button> -->
           <el-button @click="logout">退出</el-button>
           <el-button @click="logoff">注销</el-button>
      </el-card>
@@ -25,7 +26,8 @@ export default {
       user: {
         username:'',
         city:''
-      }
+      },
+      xss:'<a href="javascript:alert(localStorage)">跳转</a>'
     }
   },
   created(){

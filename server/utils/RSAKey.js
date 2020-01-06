@@ -38,9 +38,6 @@ gkbeBoECgYEAjHe+1eLzeoeiuDM2yBzOCXP4KXTtADBeiiYR9OV06xjP75/0VjHD
 STbarexCkZzgQxctD9ZOP6rXFKJKoeEGG4qPB9qGhjYF31EYuZvMduA=
 -----END RSA PRIVATE KEY-----`
 class RSAKey{
-    constructor(){
-        
-    }
     getPubKey(){
         return pubKey;
     }

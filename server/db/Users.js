@@ -7,8 +7,6 @@ const RSAKey = require('../utils/RSAKey.js')
 //采用hamc的hash算法，只存储一个秘钥，要想更加安全可以在每个用户信息中添加秘钥即盐
 
 class Users{
-    constructor(){
-    }
     /* 注册---增 */
     async signup(req,res){
         try{
