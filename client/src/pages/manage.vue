@@ -1,68 +1,144 @@
 <template>
   <div class="manage center">
     <el-card class="box-card">
-      <el-form  label-width="80px" :model="form" :rules="rules" ref="form">
          <el-table
           :data="tableData"
-          style="width: 100%">
+          >
           <el-table-column
-            prop="date"
-            label="日期"
-            width="180">
+            prop="account"
+            label="账户名"
+            width="140">
           </el-table-column>
           <el-table-column
-            prop="name"
-            label="姓名"
-            width="180">
+            prop="_id"
+            label="uid"
+            width="140">
           </el-table-column>
           <el-table-column
-            prop="address"
-            label="地址">
+            prop="username"
+            label="用户名"
+            width="140">
+          </el-table-column>
+          <el-table-column
+            prop="password"
+            label="密码"
+            width="140">
+          </el-table-column>
+          <el-table-column
+            prop="code"
+            label="身份"
+            width="140">
+          </el-table-column>
+          <el-table-column
+            prop="city"
+            label="城市">
+          </el-table-column>
+          <el-table-column
+            label="操作"
+            fixed="right"
+          >
+            <template slot-scope="scope">
+              <!-- <el-button @click="get(scope.row)" type="text" size="small">查看</el-button> -->
+              <el-button type="text" size="small" @click="handleClick(scope.row)">编辑</el-button>
+              <el-button
+                @click.native.prevent="deleteRow(scope.$index)"
+                type="text"
+                size="small">
+                删除
+              </el-button>
+            </template>
           </el-table-column>
         </el-table>
-      </el-form>
     </el-card>
+  <el-dialog title="编辑" :visible.sync="dialogEdit">
+    <el-form :model="row" label-width="100px">
+      <el-form-item label="用户名">
+        <el-input v-model="row.username"></el-input>
+      </el-form-item>
+      <el-form-item label="账户">
+        <span>{{row.account}}</span>
+      </el-form-item>
+      <el-form-item label="密码">
+        <span>{{row.password}}</span>
+      </el-form-item>
+      <el-form-item label="城市">
+        <el-input v-model="row.city"></el-input>
+      </el-form-item>
+      <el-form-item label="uid">
+        <el-input v-model="row._id"></el-input>
+      </el-form-item>
+      <el-form-item label="身份">
+        <el-select v-model="row.code" placeholder="身份">
+          <el-option label="管理员" value="2"></el-option>
+          <el-option label="普通用户" value="1"></el-option>
+        </el-select>
+      </el-form-item>
+    </el-form>
+    <div slot="footer" class="dialog-footer">
+      <el-button type="primary" @click="confirm">确 定</el-button>
+      <el-button @click="cancel">取 消</el-button>
+    </div>
+  </el-dialog>
   </div>
 </template>
 
 <script>
-import md5 from 'js-md5'
-
 export default {
   name: 'Signup',
   data() {
         return {
-          tableData: []
+          tableData: [],
+          dialogEdit:false,
+          form:{},
+          row:{}
         }
-      },
+  },
   methods:{
-    signup(formName){
-      this.$refs[formName].validate((valid) => {
-          if (valid) {
-            const form=this.form;
-            form.password=this.CalcuMD5(this.form.password);
-            this.$ajax.post("/api/signup",form).then(res => {
-              if(res.data.code==1){
-                this.$message(res.data.message);
-              }else if(res.data.code==0){
-                this.$message(res.data.message);
-                this.$router.push("/login");
-              }
-            });
-          }
-        });
-
+    handleClick(row){
+      this.dialogEdit=true;
+      this.row=Object.assign({},row);
+      switch(this.row.code){
+          case 2:
+            this.row.code = '普通用户';
+            break;
+          case 1:
+            this.row.code =  '管理员';
+            break;
+      }
     },
-    created(){
-      this.$ajax.get('/api/alluser').then((res)=>{
-          console.log(res);
-      })
+    edit(data){
+      this.form=data
+    },
+    cancel(){
+      this.dialogEdit=false;
+    },
+    async confirm(){
+      this.dialogEdit=false;
+      let res = await this.$ajax.post('/api/change',this.row)
+      this.getAllUsers();
+      console.log(res);
+    },
+    async deleteRow($index,$row){
+      const res = await this.$ajax.delete('/api/logoff?uid='+$row[$index]._id);
+      if(res.data.code===0){
+        this.tableData.splice($index,1)
+        this.$message("删除成功")
+      }
+    },
+    async getAllUsers(){
+      const res = await this.$ajax.get('/api/getAllUsers');
+      this.tableData = res.data;
     }
+  },
+  async mounted(){
+      this.getAllUsers();
   }
 }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-
+.manage{
+  width:1000px;
+}
 </style>

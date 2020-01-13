@@ -1,10 +1,11 @@
 const svgCaptcha = require('svg-captcha');
 
 const jwt = require('../utils/jwt.js')
-const User = require('./model')
-const RSAKey = require('../utils/RSAKey.js')
+const User = require('../model/Users.js')
+const RSAKey = require('../utils/RSAKey')
 // const crypto = require('crypto');
 //采用hamc的hash算法，只存储一个秘钥，要想更加安全可以在每个用户信息中添加秘钥即盐
+//还有一种方案，也可以对密码进行多次不同的hash加密，也能增大破解难度
 
 class Users{
     /* 注册---增 */
@@ -52,7 +53,6 @@ class Users{
                         throw new Error("密码错误");
                     }else{
                         const token=jwt.generate({uid:find[0]._id});
-                        // res.cookie("token",token,{maxAge: 900000, httpOnly: true});
                         res.send({code:0,message:'用户登录成功',data:{token:token,uid:find[0]._id}});
                     }
                 }else{
@@ -84,16 +84,6 @@ class Users{
             res.send({code:1,message:err.message});
         }
     }
-    /* 退出登录  */
-    async logout(req,res){
-        try {
-            // res.cookie('token', '', { expires: new Date(0)}); 
-            res.send({code:0,message:'退出成功'})
-        } catch (error) {
-            res.send({code:1,message:err.message})
-        }
-
-    }
     /* 注销账号---删 */
     async logoff(req,res){
         try{
@@ -101,20 +91,24 @@ class Users{
             // console.log(result);
             res.send({code:0,message:'注销成功！'})
         }catch(err){
-            throw err;
             res.send({code:1,message:'注销失败'})
         }
     }
     /* 改信息---改 */
     async change(req,res){
         try{
-            await User.findByIdAndUpdate(req.body.uid,{username:req.body.username,city:req.body.city})
+            const uid = req.body.uid||req.body._id;
+            await User.findByIdAndUpdate(uid,{
+                username:req.body.username,
+                city:req.body.city,
+                password:req.body.password,
+            })
             res.send({code:0,message:'修改成功！'})
         }catch(err){
             res.send({code:1,message:'修改失败！'})
         }
     }
-    async getCaptcha(req,res){
+    getCaptcha(req,res){
         const captcha = svgCaptcha.create({ 
             inverse: false, // 翻转颜色 
             fontSize: 48, // 字体大小 

@@ -1,7 +1,9 @@
 const express = require('express');
 const router =express.Router();
-const users = require('./Users')
-const jwt = require('../utils/jwt')
+const users = require('./controller/Users')
+const admin = require('./controller/Admin')
+const jwt = require('./utils/jwt')
+/* 用户操作 */
 router.post('/login', users.login);
 router.post('/signup', users.signup);
 router.post('/change', users.change);
@@ -13,7 +15,12 @@ router.get('/logout', users.logout);
 router.delete('/logoff', users.logoff);
 
 router.get('/getRSAPubKey',users.getRSAPubKey)
- /* 挂载路由 */
+
+/* 管理员操作 */
+
+router.get('/getAllUsers',admin.getAllUsers)
+
+ /* 路由拦截中间件，拦截没有token的路由 */
 module.exports =  function(app){
     app.use('/',function(req,res,next){
         /* https://cnodejs.org/topic/5757e80a8316c7cb1ad35bab

@@ -1,14 +1,13 @@
 'use strict';
 
 const express = require('express');
-/* 这里一定记得加bodyparser来对body的内容进行配置不然获取不到req。body对象 */
+/* 这里一定记得加bodyparser来对body的内容进行配置不然获取不到req.body对象 */
 const app = express();
-const db =require('./db')
+require('./db')
 const session = require('express-session');
 const cookieParser = require('cookie-parser'); 
 const router =require('./routes.js');
 const bodyParser = require('body-parser');
-const jwt = require('../utils/jwt');
 
 app.use(bodyParser.urlencoded({txtended: false}))
 //parse application/json

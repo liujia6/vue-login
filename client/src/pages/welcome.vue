@@ -50,22 +50,13 @@ export default {
           cancelButtonText: '取消',
           type: 'warning'
       }).then(() => {
-        that.$ajax.get('/api/logout?uid='+window.localStorage.getItem('uid')).then((res)=>{
-          if(res.data.code===0){
-            this.$message({
-              type: 'success',
-              message: res.data.message
-            });
-            window.localStorage.removeItem('uid');
-            window.localStorage.removeItem('token');
-            this.$router.replace('/');
-          }else{
-            this.$message({
-              type: 'info',
-              message: res.data.message
-            });
-          }
-        })
+          this.$message({
+            type: 'success',
+            message: '退出成功'
+          });
+          window.localStorage.removeItem('uid');
+          window.localStorage.removeItem('token');
+          this.$router.replace('/');
       }).catch(() => {
         this.$message({
           type: 'info',

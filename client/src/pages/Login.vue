@@ -54,7 +54,6 @@
 </template>
 
 <script>
-import md5 from 'js-md5'
 import JSEncrypt from 'jsencrypt'
 export default {
   name: 'Signup',
@@ -106,7 +105,7 @@ export default {
             if(result.data.code===0){
               window.localStorage.setItem('uid',result.data.data.uid);
               window.localStorage.setItem('token',result.data.data.token);
-              this.$router.push('/welcome');
+              this.$router.push('/Index');
             }else{
               this.user.password='';
             }
@@ -134,7 +133,7 @@ export default {
             that.$ajax.post('/api/login',form).then(function(res){
               if(res.data.code==0){
                 window.localStorage.setItem('uid',res.data.data.uid)
-                that.$router.push('/welcome')
+                that.$router.push('/Welcome')
                 that.refreshCaptcha();
               }else{
                 that.$message(res.data.message)

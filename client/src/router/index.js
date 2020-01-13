@@ -1,7 +1,8 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import Login from '@/pages/Login'
-import Welcome from '../pages/Welcome'
+import Welcome from '../pages/welcome'
+import manage from '@/pages/manage'
 Vue.use(Router)
 
 export default new Router({
@@ -18,9 +19,18 @@ export default new Router({
         authDisable:true
       }
     },{
+      path:'/Index',
+      name:'Index',
+      redirect:to =>{
+        
+      }
+    },{
       path:'/Welcome',
       name:'Welcome',
       component:Welcome
+    },{
+      path:'/manage',
+      component:manage
     }
   ]
 })

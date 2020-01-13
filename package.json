@@ -1,0 +1,20 @@
+{
+  "name": "vue-login",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "run.sh"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/liujia6/vue-login.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/liujia6/vue-login/issues"
+  },
+  "homepage": "https://github.com/liujia6/vue-login#readme"
+}
