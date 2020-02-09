@@ -1,7 +1,6 @@
 'use strict';
 
 const express = require('express');
-/* 这里一定记得加bodyparser来对body的内容进行配置不然获取不到req.body对象 */
 const app = express();
 require('./db')
 const session = require('express-session');
@@ -9,6 +8,8 @@ const cookieParser = require('cookie-parser');
 const router =require('./routes.js');
 const bodyParser = require('body-parser');
 
+/* use中间件，对请求做一些处理的封装使用注册 */
+/* bodyparser来对body的内容处理，使能获取到req.body对象 */
 app.use(bodyParser.urlencoded({txtended: false}))
 //parse application/json
 app.use(bodyParser.json())
@@ -57,4 +58,3 @@ router(app)
 const server = app.listen(3000, function (err,data) {
     console.log('监听端口3000')
 })
-  
