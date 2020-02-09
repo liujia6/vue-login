@@ -22,7 +22,6 @@
                 <el-button type="primary" @click="signup('form')">注册</el-button>
               </el-form-item>
             </el-form>
-
         </el-tab-pane>
         <el-tab-pane label="登录" name="second">
           <el-form  label-width="80px" :model="user" :rules="rules" ref="user">
@@ -39,9 +38,6 @@
                 <el-col :span="2">
                   <div v-html="res" @click="refreshCaptcha"></div>
                 </el-col>
-              <!-- <div id="kigsawContainer">
-              </div> -->
-              <!-- <Verify @success="verify=true" @error="verify=false" :type="1"></Verify> -->
             </el-form-item>
             <el-form-item>
               <el-button type="primary" @click="login('user')">登录</el-button>
@@ -105,7 +101,7 @@ export default {
             if(result.data.code===0){
               window.localStorage.setItem('uid',result.data.data.uid);
               window.localStorage.setItem('token',result.data.data.token);
-              this.$router.push('/Index');
+              this.$router.push('/index');
             }else{
               this.user.password='';
             }
@@ -124,7 +120,7 @@ export default {
           this.validate(valid,'signup')
       })
     },
-    validateLogin(valid,that){
+    validatelogin(valid,that){
       if (valid) {
             const form=that.user;
             const that=this;
@@ -133,7 +129,7 @@ export default {
             that.$ajax.post('/api/login',form).then(function(res){
               if(res.data.code==0){
                 window.localStorage.setItem('uid',res.data.data.uid)
-                that.$router.push('/Welcome')
+                that.$router.push('/welcome')
                 that.refreshCaptcha();
               }else{
                 that.$message(res.data.message)

@@ -13,9 +13,9 @@ const userSchema = mongoose.Schema({
         type: String,
         required: true //必须有值
     },
-    code: {
-        type:Number,
-        default:2
+    roleList: {
+        type:Array,
+        default:[1],
     },//1：客户 2.管理员 
     city:String
 });

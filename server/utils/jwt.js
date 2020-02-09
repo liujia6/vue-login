@@ -5,6 +5,7 @@ class jwtToken{
     constructor(){
         this.secret='sdfjn.../sdf';
     }
+    /* 产生jwt */
     generate(obj){
         const token=jwt.sign(obj,this.secret,{
              expiresIn: '1h' 
@@ -12,6 +13,7 @@ class jwtToken{
         })
         return token;
     }
+    /* 验证前端传过来的jwt */
     verify(token){
         try{
             return jwt.verify(token,this.secret,function(err,data){

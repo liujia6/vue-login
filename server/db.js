@@ -1,26 +1,26 @@
 const mongoose = require('mongoose')
-// cosnt mongodb = {
-//   address: '10.95.48.81',
-//   port: 27017,
-//   username: 'admin',
-//   password: '123456',
-//   authSource: 'admin',
-//   database: 'mtool_dev'
-// }
+const config = {
+  address: 'localhost',
+  // address: '10.95.48.81',
+  port: 27017,
+  username: 'admin',
+  password: 'admin',
+  database: 'admin'
+}
 
-
-mongoose
-  .connect('mongodb://localhost:27017/login',{
-  // .connect('mongodb://10.95.48.81:27017/login',{
+console.log("??");
+// mongoose.connect('mongodb://10.95.48.81:27017/login',{
+// mongoose.connect('mongodb://localhost:27017/login',{
+  mongoose.connect(`mongodb://${config.username}:${config.password}@${config.address}:${config.port}/${config.database}`,{
       useNewUrlParser: true ,
       useUnifiedTopology: true,
       useCreateIndex:true
   })
   .then(() => {
-    console.log("连接成功");
+    console.log("数据库连接成功");
   })
   .catch(() => {
-    console.log("连接失败");
+    console.log("数据库连接失败");
   });
   mongoose.set('useFindAndModify', false)
 mongoose.Promise = global.Promise;

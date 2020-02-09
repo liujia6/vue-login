@@ -1,2 +1,0 @@
-cd client
-pwd

@@ -16,5 +16,7 @@
   "bugs": {
     "url": "https://github.com/liujia6/vue-login/issues"
   },
-  "homepage": "https://github.com/liujia6/vue-login#readme"
+  "homepage": "https://github.com/liujia6/vue-login#readme",
+  "devDependencies": {},
+  "dependencies": {}
 }

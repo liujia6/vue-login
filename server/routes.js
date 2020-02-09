@@ -1,26 +1,27 @@
-const express = require('express');
-const router =express.Router();
-const users = require('./controller/Users')
-const admin = require('./controller/Admin')
-const jwt = require('./utils/jwt')
+const express = require("express");
+const router = express.Router();
+const user = require("./controller/User.js");
+const jwt = require("./utils/jwt");
 /* 用户操作 */
-router.post('/login', users.login);
-router.post('/signup', users.signup);
-router.post('/change', users.change);
+router.post("/login", user.login);
+router.post("/signup", user.signup);
+router.post("/change", user.change);
 
-router.get('/getCaptcha',users.getCaptcha)
-router.get('/info', users.info);
+router.get("/getCaptcha", user.getCaptcha);
+router.get("/info", user.info);
 
-router.get('/logout', users.logout);
-router.delete('/logoff', users.logoff);
+// router.get("/logout", user.logout);
+router.delete("/logoff", user.logoff);
 
-router.get('/getRSAPubKey',users.getRSAPubKey)
+router.get("/getRSAPubKey", user.getRSAPubKey);
 
 /* 管理员操作 */
 
-router.get('/getAllUsers',admin.getAllUsers)
-
- /* 路由拦截中间件，拦截没有token的路由 */
+router.get("/getAlluser", user.getAllUsers);
+router.get("formPost", function(req, res) {
+  console.log(req);
+});
+/* 路由拦截中间件，拦截没有token的路由 */
 module.exports =  function(app){
     app.use('/',function(req,res,next){
         /* https://cnodejs.org/topic/5757e80a8316c7cb1ad35bab
@@ -39,20 +40,10 @@ module.exports =  function(app){
                 }
                 if(!verify){
                      next();
-                }else if(verify.message===`jwt expired`){
-                    res.status(401).json({code:1,message:'jwtToken过期了'})
-                }else{
-                    res.status(401).json({code:1,message:verify.message})
                 }
-            }catch(err){
-                throw new Error(err)
-                res.send(err.message)
-            }
-        }else{
-            return next();
-        }
-    })
-    app.use('/',router);
-    
-    
+            };
+       }
+  app.use("/", router);
 }
+
+
