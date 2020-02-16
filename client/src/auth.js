@@ -94,6 +94,6 @@ class auth {
     this.reset();
   }
 }
-const a3Service = new auth();
+const a3Service = new AAA();
 export default a3Service;
 export { a3Service };

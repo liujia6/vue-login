@@ -1,6 +1,7 @@
 const mongoose = require('mongoose')
 
 mongoose.connect('mongodb://localhost:27017/login',{
+// mongoose.connect('mongodb://10.95.48.81:27017/login',{
       useNewUrlParser: true ,
       useUnifiedTopology: true,
       useCreateIndex:true

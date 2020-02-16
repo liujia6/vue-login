@@ -2,7 +2,7 @@
 采用前后端分离架构，完成基本的注册登录
 - 前端采用Vue、elementUI
 - 后端采用Node用Express框架，数据库采用MongoDB的Mongoose实现
-- 开发阶段用webpack代理，完成打包后可以用Nginx部署
+- 开发阶段用webpack代理，完成打包后用Nginx部署
 
 ## Build Setup
 
@@ -14,13 +14,12 @@ npm install   //安装依赖
 npm run dev
 # build for production with minification
 npm run build
-
 # 后端起服务
 cd ../server
 npm install
 node main
-#可以全局下载nodemon 方便调试
-# serve  at localhost:3000 
+# serve  at localhost:3000
+npm run dev   
 ```
 
 登录逻辑如下图

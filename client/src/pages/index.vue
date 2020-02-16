@@ -40,18 +40,7 @@ export default {
         that.user.username = res.data.data.username;
       });
   },
-  watch: {
-    emm(v){
-      console.log(v);
-    }
-  },
   methods: {
-    testFunc(a){
-    // testFunc(a,$event){
-      // this.emm=$event.target.value;
-      // console.log(a,$event)
-      // console.log(a)
-    },
     change() {
       const that = this;
       this.$ajax

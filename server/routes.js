@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const user = require("./controller/User.js");
+const user = require("./controller/user.js");
 const jwt = require("./utils/jwt");
 /* 用户操作 */
 router.post("/login", user.login);
@@ -18,7 +18,6 @@ router.get("/getRSAPubKey", user.getRSAPubKey);
 /* 管理员操作 */
 
 router.get("/getAlluser", user.getAllUsers);
-
 /* 路由拦截中间件，拦截没有token的路由 */
 module.exports =  function(app){
     app.use('/',function(req,res,next){
@@ -39,6 +38,8 @@ module.exports =  function(app){
                 }
        }
        app.use("/", router);
-})
+    })
+    app.use("/", router);
 }
+
 
