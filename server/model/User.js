@@ -13,11 +13,11 @@ const userSchema = mongoose.Schema({
         type: String,
         required: true //必须有值
     },
-    roleList: {
-        type:Array,
-        default:[1],
+    role: {
+        type:Number,
+        default:0,
     },//1：客户 2.管理员 
-    city:String
+    city:String,
 });
 const User = mongoose.model('User', userSchema);
 module.exports = User;

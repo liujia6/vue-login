@@ -16,23 +16,18 @@ export default new Router({
       path: '/',
       name: 'login',
       component: login,
-      meta:{
-        authDisable:true
-      }
     },{
       path:'/index',
       name:'index',
       component:index,
-      meta:{
-        btnPermission:['admin'],
-      }
     },{
       path:'/welcome',
       name:'welcome',
       component:welcome
     },{
       path:'/manage',
-      component:manage
+      component:manage,
+      roleList:['admin'],
     }
   ]
 })

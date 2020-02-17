@@ -17,6 +17,7 @@
 </template>
 
 <script>
+import auth from '../auth.js'
 export default {
   name: 'welcome',
   data () {
@@ -29,7 +30,7 @@ export default {
   },
   created(){
     const that=this;
-    this.$ajax.get('/api/info?uid='+window.localStorage.uid).then(function(res){
+    this.$ajax.get('/api/info?uid='+auth.loginInfo.uid).then(function(res){
       that.user.city=res.data.data.city;
       that.user.username=res.data.data.username;
     })
@@ -37,7 +38,7 @@ export default {
   methods:{
     change(){
       const that=this;
-      this.$ajax.post('api/change',Object.assign(this.user,{uid:window.localStorage.getItem('uid')})).then((res)=>{
+      this.$ajax.post('api/change',Object.assign(this.user,{uid:auth.loginInfo.uid})).then((res)=>{
           if(res.data.code===0){
             that.$message('修改成功！')
           }
@@ -54,8 +55,7 @@ export default {
             type: 'success',
             message: '退出成功'
           });
-          window.localStorage.removeItem('uid');
-          window.localStorage.removeItem('token');
+          auth.logout();
           this.$router.replace('/');
       }).catch(() => {
         this.$message({
@@ -71,14 +71,13 @@ export default {
           cancelButtonText: '取消',
           type: 'warning'
       }).then(() => {
-        that.$ajax.delete('/api/logoff?uid='+window.localStorage.getItem('uid')).then((res)=>{
+        that.$ajax.delete('/api/logoff?uid='+auth.loginInfo.uid).then((res)=>{
           if(res.data.code===0){
             this.$message({
               type: 'success',
               message: res.data.message
             });
-            window.localStorage.removeItem('uid')
-            window.localStorage.removeItem('token')
+            auth.logout();
             that.$router.push('/')
           }else{
             this.$message({

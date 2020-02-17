@@ -15,6 +15,7 @@ class jwtToken{
     }
     /* 验证前端传过来的jwt */
     verify(token){
+        //TODO 这里可以在数据库查询一下是否有改tokn
         try{
             return jwt.verify(token,this.secret,function(err,data){
                 //校验成功err为null，data为当前jwt数据

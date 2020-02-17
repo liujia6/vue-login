@@ -9,6 +9,7 @@ router.post("/change", user.change);
 
 router.get("/getCaptcha", user.getCaptcha);
 router.get("/info", user.info);
+router.get("/loginInfo",user.loginInfo)
 
 // router.get("/logout", user.logout);
 router.delete("/logoff", user.logoff);

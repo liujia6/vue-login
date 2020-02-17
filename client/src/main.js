@@ -7,6 +7,8 @@ import axios from "axios";
 
 import ElementUI from "element-ui";
 import "element-ui/lib/theme-chalk/index.css";
+
+import auth from './auth.js'
 Vue.use(ElementUI);
 
 // 请求拦截
@@ -49,35 +51,42 @@ axios.interceptors.response.use(
 Vue.prototype.$ajax = axios;
 //每次路由跳转的时候判断页面是否需要token，再检验是否有token，没有的话就跳转登录，有的话就继续；可根据不同业余需求更改
 router.beforeEach((to, from, next) => {
-  if (!to.meta.authDisable) {
-    if (!window.localStorage.getItem("token")) {
-      next("/");
+  if (to.meta.roleList) {//如果该页面有权限限制
+    if (auth.token) {
+      axios.get("/loginInfo",{token:auth.token}).then((res)=>{
+        auth.loginInfo=res.data.data.loginInfo;
+      })
+      if(to.meta.roleList.includes(auth.loginInfo.role)){
+          next("/");
+      }else{
+        next("/404")
+      }
     }
   }
   next();
 });
 
-Vue.prototype.$_permission = function(value) {
-  let isExist = false;
-  let btnPermissionsStr = sessionStorage.getItem("btnPermissions");
-  if (btnPermissionsStr == undefined || btnPermissionsStr == null) {
-    return false;
-  }
-  if (value.indexOf(btnPermissionsStr) > -1) {
-    isExist = true;
-  }
-  return isExist;
-};
+// Vue.prototype.$_permission = function(value) {
+//   let isExist = false;
+//   let btnPermissionsStr = sessionStorage.getItem("btnPermissions");
+//   if (btnPermissionsStr == undefined || btnPermissionsStr == null) {
+//     return false;
+//   }
+//   if (value.indexOf(btnPermissionsStr) > -1) {
+//     isExist = true;
+//   }
+//   return isExist;
+// };
 
-Vue.directive("permission", {
-  bind: function(el, binding, vnode) {
-    // 获取按钮权限
-    let btnPermissions = vnode.context.$route.meta.btnPermissions.split(",");
-    if (!Vue.prototype.$_has(btnPermissions)) {
-      el.parentNode.removeChild(el);
-    }
-  }
-});
+// Vue.directive("permission", {
+//   bind: function(el, binding, vnode) {
+//     // 获取按钮权限
+//     let btnPermissions = vnode.context.$route.meta.btnPermissions.split(",");
+//     if (!Vue.prototype.$_has(btnPermissions)) {
+//       el.parentNode.removeChild(el);
+//     }
+//   }
+// });
 
 Vue.config.productionTip = false;
 

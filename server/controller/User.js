@@ -1,7 +1,7 @@
 const svgCaptcha = require("svg-captcha");
 
 const jwt = require("../utils/jwt.js");
-const user = require("../model/User.js");
+const user = require("../model/user.js");
 const RSAKey = require("../utils/RSAKey");
 //采用hamc的hash算法，只存储一个秘钥，要想更加安全可以在每个用户信息中添加秘钥即盐
 //还有一种方案，也可以对密码进行多次不同的hash加密，也能增大破解难度

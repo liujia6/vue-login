@@ -51,6 +51,7 @@
 
 <script>
 import JSEncrypt from 'jsencrypt'
+import auth from '../auth.js'
 export default {
   name: 'Signup',
   data () {
@@ -99,8 +100,8 @@ export default {
           this.refreshCaptcha();
           if(type=='login'){
             if(result.data.code===0){
-              window.localStorage.setItem('uid',result.data.data.uid);
-              window.localStorage.setItem('token',result.data.data.token);
+              //存储token和登录信息
+              auth.login(result)
               this.$router.push('/index');
             }else{
               this.user.password='';
@@ -119,25 +120,6 @@ export default {
       this.$refs[formName].validate((valid)=>{
           this.validate(valid,'signup')
       })
-    },
-    validatelogin(valid,that){
-      if (valid) {
-            const form=that.user;
-            const that=this;
-            form.password=that.CalcRSA(form.password);
-            form.captcha=form.captcha.toLowerCase();
-            that.$ajax.post('/api/login',form).then(function(res){
-              if(res.data.code==0){
-                window.localStorage.setItem('uid',res.data.data.uid)
-                that.$router.push('/welcome')
-                that.refreshCaptcha();
-              }else{
-                that.$message(res.data.message)
-                that.user.password='';
-                that.refreshCaptcha()
-              }
-            })
-          }
     },
     login(formName){
       this.$refs[formName].validate((valid) => {
