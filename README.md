@@ -23,7 +23,7 @@ npm run dev
 ```
 
 登录逻辑如下图
-![](https://note.youdao.com/yws/public/resource/c9f1b9f836ce443c9e328d9da17c3c84/xmlnote/653350EF682F4A5683C68F3213F028D5/14680)
+![](https://note.youdao.com/yws/public/resource/c9f1b9f836ce443c9e328d9da17c3c84/xmlnote/6120642C67A644BBB984A18767CDD631/15302)
 ## 一、登录逻辑
 -  登录逻辑
     - 登录验证通过后，后端采用jwt配置数据库中id和过期时间1h的签名（这里可以加上refreshtoken，或调整过期时间），（jwt中带有uid和用户角色等身份信息，我们以后每次请求带上jwt，后端验证再解出用户信息即可）生成token加上id返回到前端
