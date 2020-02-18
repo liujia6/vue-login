@@ -2,7 +2,7 @@
   <div class="manage center">
     <el-card class="box-card">
          <el-table
-          :data="tableData"
+          :data="list"
           >
           <el-table-column
             prop="account"
@@ -41,7 +41,7 @@
               <!-- <el-button @click="get(scope.row)" type="text" size="small">查看</el-button> -->
               <el-button type="text" size="small" @click="handleClick(scope.row)">编辑</el-button>
               <el-button
-                @click.native.prevent="deleteRow(scope.$index)"
+                @click.native.prevent="deleteRow(scope.row)"
                 type="text"
                 size="small">
                 删除
@@ -87,7 +87,7 @@ export default {
   name: 'Signup',
   data() {
         return {
-          tableData: [],
+          list: [],
           dialogEdit:false,
           form:{},
           row:{}
@@ -113,21 +113,24 @@ export default {
       this.dialogEdit=false;
     },
     async confirm(){
-      this.dialogEdit=false;
-      let res = await this.$ajax.post('/api/change',this.row)
+      console.log(this.row._id);
+      let res = await this.$ajax.post('/api/change?uid='+this.row._id,this.row)
       this.getAllUsers();
+      this.dialogEdit=false;
       console.log(res);
     },
-    async deleteRow($index,$row){
-      const res = await this.$ajax.delete('/api/logoff?uid='+$row[$index]._id);
+    async deleteRow($row){
+      const res = await this.$ajax.delete('/api/logoff?uid='+$row._id);
       if(res.data.code===0){
-        this.tableData.splice($index,1)
+        // this.list.splice($index,1)
+        getAllUsers();
         this.$message("删除成功")
       }
     },
     async getAllUsers(){
       const res = await this.$ajax.get('/api/getAllUsers');
-      this.tableData = res.data;
+      this.list = res.data.data;
+      console.log(this.list,res.data.data);
     }
   },
   async mounted(){

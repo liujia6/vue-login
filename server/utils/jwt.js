@@ -21,7 +21,7 @@ class jwtToken{
                 //校验成功err为null，data为当前jwt数据
                 // console.log(data,'data');
                 // console.log(err&&err.message,'err');
-                return err;
+                return{ err,data};
             })
         }catch(err){
             return err.message

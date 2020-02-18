@@ -46,11 +46,12 @@ class User {
         res.send({ code: 1, message: "请刷新验证码" });
       }
       if (req.body.captcha == req.session["captcha"]) {
+        //查询账号是否存在
         const find = await user.find({ account: req.body.account });
         if (find.length) {
-          //RSA解密
+          //将加密后的密码用RSA解密
           let pwd = RSAKey.privateDecrypt(req.body.password);
-          //hamc哈希映射
+          //将原始密码hamc哈希映射
           pwd = require("crypto")
             .createHmac("sha256", "secret-key")
             .update(pwd)
@@ -58,15 +59,18 @@ class User {
           if (find[0].password !== pwd) {
             throw new Error("密码错误");
           } else {
-            const token = jwt.generate({ uid: find[0]._id });
+            const token = jwt.generate({
+               uid: find[0]._id,
+               role:find[0].role,
+            });
+
             res.send({
               code: 0,
               message: "用户登录成功",
               data: { 
                   token: token,
-                  uid: find[0]._id,
-                  role:find[0].roleList,
-             }
+            }
+
             });
           }
         } else {
@@ -79,10 +83,12 @@ class User {
       res.send({ code: 1, message: err.message });
     }
   }
-  /*返回个人信息-- 查 */
+  /*返回用户可修改查看的个人信息-- 查 */
   async info(req, res) {
     try {
-      const find = await user.findById(req.query.uid);
+      console.log(req.loginInfo);
+      const find = await user.findById(req.loginInfo.uid);
+      console.log(find);
       if (find) {
         res.send({
           code: 0,
@@ -98,10 +104,30 @@ class User {
       res.send({ code: 1, message: err.message });
     }
   }
+  getLoginInfo(req,res,next){
+        /* https://cnodejs.org/topic/5757e80a8316c7cb1ad35bab
+        1.请求中的next在函数中运行之后并不会取消执行函数之后的语句，会继续执行，如果之后再出现next语句，会报错
+        Error: Can't set headers after they are sent.
+        而出现这个错误的原因是：将一个连接关闭（render/end等）之后仍然去输出（send/end/write等等），
+        所以要记得用return next()，或者之后不再有next了
+        2. 请求处理函数中如果没有next，那么在客户端请求时将一直处于挂起pending状态
+        */
+       const token = req.headers.authorization;
+       const verify = token && jwt.verify(token.split(' ')[1])
+       if(!token){
+          return res.status(401).json({code:1,message:'请登录提供jwtToken'})
+       }else if(verify){//如果verify有值
+          return res.send({
+            code:0,
+            message:"success",
+            data:verify
+          })
+       }
+    }
   /* 注销账号---删 */
   async logoff(req, res) {
     try {
-      const result = await user.findByIdAndDelete(req.query.uid);
+     await user.findByIdAndDelete(req.query.uid?req.query.uid:req.loginInfo.uid);
       // console.log(result);
       res.send({ code: 0, message: "注销成功！" });
     } catch (err) {
@@ -111,11 +137,9 @@ class User {
   /* 改信息---改 */
   async change(req, res) {
     try {
-      const uid = req.body.uid || req.body._id;
-      await user.findByIdAndUpdate(uid, {
+      await user.findByIdAndUpdate(req.query.uid?req.query.uid:req.loginInfo.uid, {
         username: req.body.username,
         city: req.body.city,
-        password: req.body.password
       });
       res.send({ code: 0, message: "修改成功！" });
     } catch (err) {
@@ -124,7 +148,12 @@ class User {
   }
   /* 获取所有用户信息 */
   async getAllUsers(req, res) {
-    res.send(await user.find());
+    const find= await user.find();
+    res.send({
+      code: 0, 
+      message: "success",
+      data:find
+    });
   }
   /* 获取验证码svg图 */
   getCaptcha(req, res) {

@@ -8,7 +8,7 @@ import axios from "axios";
 import ElementUI from "element-ui";
 import "element-ui/lib/theme-chalk/index.css";
 
-import auth from './auth.js'
+import auth from "./auth.js";
 Vue.use(ElementUI);
 
 // 请求拦截
@@ -37,7 +37,7 @@ axios.interceptors.response.use(
         case 401:
           // 返回 401 清除token信息并跳转到登录页面
           router.replace({
-            path: "/"
+            path: "/login"
           });
         case 404:
           console.log("404错误");
@@ -49,19 +49,20 @@ axios.interceptors.response.use(
 );
 
 Vue.prototype.$ajax = axios;
-//每次路由跳转的时候判断页面是否需要token，再检验是否有token，没有的话就跳转登录，有的话就继续；可根据不同业余需求更改
+/*
+ 如果页面是需要权限的，那么我们就去拉取登录权限信息，从meta中判断所需权限是否一致，不一致就返回403
+ TODO 如果系统比较复杂可以采用动态拉取权限路由信息
+*/
+
 router.beforeEach((to, from, next) => {
-  if (to.meta.roleList) {//如果该页面有权限限制
-    if (auth.token) {
-      axios.get("/loginInfo",{token:auth.token}).then((res)=>{
-        auth.loginInfo=res.data.data.loginInfo;
-      })
-      if(to.meta.roleList.includes(auth.loginInfo.role)){
-          next("/");
-      }else{
-        next("/404")
+  if (to.meta.roleList && auth.token) {
+    axios.get("/api/loginInfo").then(res => {
+      if (to.meta.roleList.includes(res.data.data.data.role)) {
+        next();
+      } else {
+        next("/403");
       }
-    }
+    });
   }
   next();
 });
@@ -87,6 +88,19 @@ router.beforeEach((to, from, next) => {
 //     }
 //   }
 // });
+
+Vue.directive("permission", {
+  bind: function(el, binding, vnode) {
+    // 获取按钮权限
+    let btnPermission = vnode.context.$route.meta.btnPermission;
+    console.log(vnode,el);
+    axios.get("/api/loginInfo").then(res => {
+      if (!btnPermission.includes(res.data.data.data.role)) {
+        el.parentNode.removeChild(el);
+      }
+    });
+  }
+});
 
 Vue.config.productionTip = false;
 

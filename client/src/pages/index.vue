@@ -7,8 +7,8 @@
         mode="horizontal"
         @select="handleSelect"
       >
-        <el-menu-item index="1">个人中心</el-menu-item>
-        <el-menu-item index="1" v-permission>管理用户</el-menu-item>
+        <el-menu-item index="1" @click="welcome">个人中心</el-menu-item>
+        <el-menu-item index="2" v-permission @click="manage">管理用户</el-menu-item>
       </el-menu>
       <div class="line"></div>
       <readme class="readme"></readme>
@@ -33,13 +33,15 @@ export default {
     };
   },
   created() {
-    const that = this;
-    this.$ajax.get("/api/info?uid=" + auth.loginInfo.uid).then(function(res) {
-      that.user.city = res.data.data.city;
-      that.user.username = res.data.data.username;
-    });
+    
   },
   methods: {
+    welcome(){
+      this.$router.push('/welcome')
+    },
+    manage(){
+      this.$router.push('/manage')
+    },
     change() {
       const that = this;
       this.$ajax
@@ -81,7 +83,7 @@ export default {
         type: "warning"
       })
         .then(() => {
-          that.$ajax.delete("/api/logoff?uid=" + auth.loginInfo.uid).then(res => {
+          that.$ajax.delete("/api/logoff").then(res => {
             if (res.data.code === 0) {
               this.$message({
                 type: "success",

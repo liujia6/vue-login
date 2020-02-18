@@ -30,7 +30,8 @@ export default {
   },
   created(){
     const that=this;
-    this.$ajax.get('/api/info?uid='+auth.loginInfo.uid).then(function(res){
+    this.$ajax.get('/api/info').then(function(res){
+      console.log(res);
       that.user.city=res.data.data.city;
       that.user.username=res.data.data.username;
     })
@@ -38,7 +39,7 @@ export default {
   methods:{
     change(){
       const that=this;
-      this.$ajax.post('api/change',Object.assign(this.user,{uid:auth.loginInfo.uid})).then((res)=>{
+      this.$ajax.post('api/change',this.user).then((res)=>{
           if(res.data.code===0){
             that.$message('修改成功！')
           }
@@ -71,7 +72,7 @@ export default {
           cancelButtonText: '取消',
           type: 'warning'
       }).then(() => {
-        that.$ajax.delete('/api/logoff?uid='+auth.loginInfo.uid).then((res)=>{
+        that.$ajax.delete('/api/logoff').then((res)=>{
           if(res.data.code===0){
             this.$message({
               type: 'success',

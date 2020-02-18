@@ -9,7 +9,7 @@ router.post("/change", user.change);
 
 router.get("/getCaptcha", user.getCaptcha);
 router.get("/info", user.info);
-router.get("/loginInfo",user.loginInfo)
+router.get("/loginInfo",user.getLoginInfo)
 
 // router.get("/logout", user.logout);
 router.delete("/logoff", user.logoff);
@@ -17,7 +17,7 @@ router.delete("/logoff", user.logoff);
 router.get("/getRSAPubKey", user.getRSAPubKey);
 
 /* 管理员操作 */
-router.get("/getAlluser", user.getAllUsers);
+router.get("/getAllUsers", user.getAllUsers);
 /* 路由拦截中间件，拦截没有token的路由 */
 module.exports =  function(app){
     app.use('/',function(req,res,next){
@@ -28,14 +28,19 @@ module.exports =  function(app){
         所以要记得用return next()，或者之后不再有next了
         2. 请求处理函数中如果没有next，那么在客户端请求时将一直处于挂起pending状态
         */
+       console.log("啊嘞？");
        const token = req.headers.authorization;
+       console.log(token);
        const verify = token && jwt.verify(token.split(' ')[1])
+       console.log(verify);
        if(req.url!=='/login'&&req.url!=='/signup'&&req.url !== '/getCaptcha'&&req.url !== '/logout'&&req.url !== '/logoff'&&req.url!=='/getRSAPubKey'){
                 if(!token){
-                    res.status(401).json({code:1,message:'请登录提供jwtToken'})
-                }
-                if(!verify){
-                     next();
+                    return res.status(401).json({code:1,message:'请登录提供jwtToken'})
+                }else if(verify.data){//如果verify有值
+                    req.loginInfo=verify.data;
+                    return next();
+                }else{
+                    return res.status(401).json({code:1,message:verify.err.message})
                 }
        }
        next();
