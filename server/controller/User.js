@@ -6,6 +6,20 @@ const RSAKey = require("../utils/RSAKey");
 //采用hamc的hash算法，只存储一个秘钥，要想更加安全可以在每个用户信息中添加秘钥即盐
 //还有一种方案，也可以对密码进行多次不同的hash加密，也能增大破解难度
 
+/* 预置管理员账号，账号admin，密码admin */
+user.find({ account: 'admin' }).then(is => {
+  if (!is.length) {
+    new user({
+      account: "admin",
+      password: require("crypto")
+        .createHmac("sha256", "secret-key")
+        .update("admin")
+        .digest("hex"),
+      role: 1
+    }).save();
+  }
+});
+
 class User {
   /* 注册---增 */
   async signup(req, res) {
@@ -60,17 +74,16 @@ class User {
             throw new Error("密码错误");
           } else {
             const token = jwt.generate({
-               uid: find[0]._id,
-               role:find[0].role,
+              uid: find[0]._id,
+              role: find[0].role
             });
 
             res.send({
               code: 0,
               message: "用户登录成功",
-              data: { 
-                  token: token,
-            }
-
+              data: {
+                token: token
+              }
             });
           }
         } else {
@@ -104,55 +117,60 @@ class User {
       res.send({ code: 1, message: err.message });
     }
   }
-  getLoginInfo(req,res,next){
-        /* https://cnodejs.org/topic/5757e80a8316c7cb1ad35bab
+  getLoginInfo(req, res, next) {
+    /* https://cnodejs.org/topic/5757e80a8316c7cb1ad35bab
         1.请求中的next在函数中运行之后并不会取消执行函数之后的语句，会继续执行，如果之后再出现next语句，会报错
         Error: Can't set headers after they are sent.
         而出现这个错误的原因是：将一个连接关闭（render/end等）之后仍然去输出（send/end/write等等），
         所以要记得用return next()，或者之后不再有next了
         2. 请求处理函数中如果没有next，那么在客户端请求时将一直处于挂起pending状态
         */
-       const token = req.headers.authorization;
-       const verify = token && jwt.verify(token.split(' ')[1])
-       if(!token){
-          return res.status(401).json({code:1,message:'请登录提供jwtToken'})
-       }else if(verify){//如果verify有值
-          return res.send({
-            code:0,
-            message:"success",
-            data:verify
-          })
-       }
+    const token = req.headers.authorization;
+    const verify = token && jwt.verify(token.split(" ")[1]);
+    if (!token) {
+      return res.status(401).json({ code: 1, message: "请登录提供jwtToken" });
+    } else if (verify) {
+      //如果verify有值
+      return res.send({
+        code: 0,
+        message: "success",
+        data: verify
+      });
     }
+  }
   /* 注销账号---删 */
   async logoff(req, res) {
     try {
-     await user.findByIdAndDelete(req.query.uid?req.query.uid:req.loginInfo.uid);
-      // console.log(result);
+      await user.findByIdAndDelete(
+        req.query.uid ? req.query.uid : req.loginInfo.uid
+      );
       res.send({ code: 0, message: "注销成功！" });
     } catch (err) {
-      res.send({ code: 1, message: "注销失败" });
+      res.send({ code: 1, message:err.message });
     }
   }
   /* 改信息---改 */
   async change(req, res) {
     try {
-      await user.findByIdAndUpdate(req.query.uid?req.query.uid:req.loginInfo.uid, {
-        username: req.body.username,
-        city: req.body.city,
-      });
+      await user.findByIdAndUpdate(
+        req.query.uid ? req.query.uid : req.loginInfo.uid,
+        {
+          username: req.body.username,
+          city: req.body.city
+        }
+      );
       res.send({ code: 0, message: "修改成功！" });
     } catch (err) {
-      res.send({ code: 1, message: "修改失败！" });
+      res.send({ code: 1, message: err.message });
     }
   }
   /* 获取所有用户信息 */
   async getAllUsers(req, res) {
-    const find= await user.find();
+    const find = await user.find();
     res.send({
-      code: 0, 
+      code: 0,
       message: "success",
-      data:find
+      data: find
     });
   }
   /* 获取验证码svg图 */

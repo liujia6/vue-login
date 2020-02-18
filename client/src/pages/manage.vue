@@ -122,10 +122,10 @@ export default {
     async deleteRow($row){
       const res = await this.$ajax.delete('/api/logoff?uid='+$row._id);
       if(res.data.code===0){
-        // this.list.splice($index,1)
-        getAllUsers();
-        this.$message("删除成功")
+        this.getAllUsers();
       }
+      this.$message(res.data.message)
+
     },
     async getAllUsers(){
       const res = await this.$ajax.get('/api/getAllUsers');

@@ -1,9 +1,4 @@
-/*
- * AAA
- * 认证（Authentication）、授权（Authorization）和计费（Accounting）的简称，
- * 是网络安全中进行访问控制的一种安全管理机制，提供认证、授权和计费三种安全服务。
- *
- */
+
 class auth {
   constructor(status, data, menu) {
     this.init();

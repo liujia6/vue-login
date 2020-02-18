@@ -2,10 +2,8 @@
   <div class="index">
     <el-card class="box-card login-card">
       <el-menu
-        :default-active="activeIndex"
         class="el-menu-demo"
         mode="horizontal"
-        @select="handleSelect"
       >
         <el-menu-item index="1" @click="welcome">个人中心</el-menu-item>
         <el-menu-item index="2" v-permission @click="manage">管理用户</el-menu-item>

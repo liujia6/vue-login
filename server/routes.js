@@ -28,20 +28,17 @@ module.exports =  function(app){
         所以要记得用return next()，或者之后不再有next了
         2. 请求处理函数中如果没有next，那么在客户端请求时将一直处于挂起pending状态
         */
-       console.log("啊嘞？");
        const token = req.headers.authorization;
-       console.log(token);
        const verify = token && jwt.verify(token.split(' ')[1])
-       console.log(verify);
-       if(req.url!=='/login'&&req.url!=='/signup'&&req.url !== '/getCaptcha'&&req.url !== '/logout'&&req.url !== '/logoff'&&req.url!=='/getRSAPubKey'){
-                if(!token){
-                    return res.status(401).json({code:1,message:'请登录提供jwtToken'})
-                }else if(verify.data){//如果verify有值
-                    req.loginInfo=verify.data;
-                    return next();
-                }else{
-                    return res.status(401).json({code:1,message:verify.err.message})
-                }
+       if(req.url!=='/login'&&req.url!=='/signup'&&req.url !== '/getCaptcha'&&req.url !== '/logout'&&req.url!=='/getRSAPubKey'){
+            if(!token){
+                return res.status(401).json({code:1,message:'请登录提供jwt'})
+            }else if(verify.data){//如果verify有值
+                req.loginInfo=verify.data;
+                return next();
+            }else{
+                return res.status(401).json({code:1,message:verify.err.message})
+            }
        }
        next();
     },router)
